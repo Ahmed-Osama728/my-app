@@ -38,8 +38,8 @@ const CustomersList = ({ modalOpen, setModalOpen, showVisitsBtn }) => {
           {customers.length === 0 ? (
             <p>There is No customers</p>
           ) : (
-            customers.map((customer) => (
-              <Fragment key={customer?.id}>
+            customers.map((customer, index) => (
+              <Fragment key={index}>
                 <CustomerCard
                   customerId={customer?.id}
                   data1={customer?.mobileNumber}
@@ -48,7 +48,6 @@ const CustomersList = ({ modalOpen, setModalOpen, showVisitsBtn }) => {
                   title1='Mobile Number'
                   title2='First Name'
                   title3='Last Name'
-                  customerVisits={customer?.visits}
                   showVisitsBtn={showVisitsBtn}
                 />
               </Fragment>

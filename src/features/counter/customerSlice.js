@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 
 // fetch customer request
 
@@ -39,17 +40,18 @@ export const addCustomer = createAsyncThunk(
     }
   }
 );
+
 // create visit request
 
 export const addVisit = createAsyncThunk(
   '/customers/addVisit',
   async (visitData, thunkAPI) => {
     const { rejectedWithValue } = thunkAPI;
-    const { data, id } = visitData;
+
     try {
-      const res = await fetch(`http://localhost:3005/customers/${id}`, {
+      const res = await fetch(`http://localhost:3005/customers`, {
         method: 'POST',
-        body: JSON.stringify(data),
+        body: JSON.stringify(visitData),
         headers: {
           'Content-type': 'application/json; charset=UTF-8'
         }
@@ -102,9 +104,15 @@ export const removeVisit = createAsyncThunk(
 
 const customersReducer = createSlice({
   name: 'customers',
-  initialState: { customers: [{ visits: [] }], loading: false, error: null },
+  initialState: {
+    customers: localStorage.getItem('customers')
+      ? JSON.parse(localStorage.getItem('customers'))
+      : [],
+    loading: false,
+    error: null
+  },
   extraReducers: {
-    // get the customers data
+    // fetch the customers data
 
     [getCustomers.pending]: (state, action) => {
       state.loading = true;
@@ -128,6 +136,10 @@ const customersReducer = createSlice({
     [addCustomer.fulfilled]: (state, action) => {
       state.loading = false;
       state.customers.push(action.payload);
+      toast.success('New Customer Added', {
+        position: 'bottom-left'
+      });
+      localStorage.setItem('customers', JSON.stringify(state.customers));
     },
     [addCustomer.rejected]: (state, action) => {
       state.loading = false;
@@ -141,9 +153,12 @@ const customersReducer = createSlice({
     },
     [addVisit.fulfilled]: (state, action) => {
       state.loading = false;
-      state.customers[action.payload.visitData.id].visits.push(
-        action.payload.visitData.data
-      );
+
+      state.customers.push(action.payload);
+      toast.success('New Visit Added', {
+        position: 'bottom-left'
+      });
+      localStorage.setItem('customers', JSON.stringify(state.customers));
     },
     [addVisit.rejected]: (state, action) => {
       state.loading = false;
@@ -158,6 +173,10 @@ const customersReducer = createSlice({
     [removeCustomer.fulfilled]: (state, action) => {
       state.loading = false;
       state.customers = state.customers.filter((c) => c.id !== action.payload);
+      toast.error('Customer Removed', {
+        position: 'bottom-left'
+      });
+      localStorage.setItem('customers', JSON.stringify(state.customers));
     },
     [removeCustomer.rejected]: (state, action) => {
       state.loading = false;
@@ -171,9 +190,13 @@ const customersReducer = createSlice({
     },
     [removeVisit.fulfilled]: (state, action) => {
       state.loading = false;
-      state.customers.visits = state.customers.visits.filter(
-        (v) => v.id !== action.payload
+      state.customers = state.customers.filter(
+        (v) => v.customerId !== action.payload
       );
+      toast.error('Visit Removed', {
+        position: 'bottom-left'
+      });
+      localStorage.setItem('customers', JSON.stringify(state.customers));
     },
     [removeVisit.rejected]: (state, action) => {
       state.loading = false;

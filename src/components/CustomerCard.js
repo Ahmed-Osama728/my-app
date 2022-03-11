@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { Button } from './Header';
 import { useDispatch } from 'react-redux';
 import { removeCustomer, removeVisit } from '../features/counter/customerSlice';
+import { useLocation } from 'react-router-dom';
 const CustomerCard = ({
   customerId,
   data1,

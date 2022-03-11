@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
@@ -8,25 +8,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import CustomerCard from './CustomerCard';
 import CartModal from '../utility/CartModal';
 import { Styles } from './CustomersList';
-import { addVisit } from '../features/counter/customerSlice';
+import { addVisit, getCustomers } from '../features/counter/customerSlice';
 import { Button } from './Header';
 
 const VisitsList = ({ modalOpen, setModalOpen }) => {
   const dispatch = useDispatch();
-  const location = useLocation();
+  const pageLocation = useLocation();
 
   const { id } = useParams();
-  const { customers } = useSelector((state) => state.customers);
-  console.log(customers);
-  const customerData = customers.find((c) => c.id === id);
 
-  let newCustomerForm;
-  location.pathname == '/'
-    ? (newCustomerForm = true)
-    : (newCustomerForm = false);
+  const { customers, loading, error } = useSelector((state) => state.customers);
+
+  useEffect(() => {
+    dispatch(getCustomers());
+  }, [dispatch, customers.length]);
+
+  const customerVisits = customers.filter((item) => item.customerId == id);
 
   const schema = yup.object().shape({
-    loc: yup.string().required(),
+    location: yup.string().required(),
     comment: yup.string()
   });
 
@@ -40,8 +40,11 @@ const VisitsList = ({ modalOpen, setModalOpen }) => {
   });
 
   const onSubmitHandler = (data) => {
-    console.log({ data });
-    let visitData = { data: data, id: id };
+    let visitData = {
+      ...data,
+      customerId: id,
+      date: new Date().toDateString()
+    };
     dispatch(addVisit(visitData));
     setModalOpen(false);
 
@@ -50,22 +53,22 @@ const VisitsList = ({ modalOpen, setModalOpen }) => {
   return (
     <ListContainer>
       <List>
-        {customerData?.visits ? (
-          customerData.visits?.map((visit, i) => (
+        {customerVisits.length === 0 ? (
+          <p>There is No visits</p>
+        ) : (
+          customerVisits?.map((v, i) => (
             <Fragment key={i}>
               <CustomerCard
-                customerId={visit?.location}
-                data1={visit?.date}
-                data2={visit?.location}
-                data3={visit?.lastName}
+                customerId={v?.id}
+                data1={v?.date}
+                data2={v?.location}
+                data3={v?.comment}
                 title1='Date'
                 title2='Location'
                 title3='Comment'
               />
             </Fragment>
           ))
-        ) : (
-          <p>There is No visits yet</p>
         )}
       </List>
       <CartModal show={modalOpen} setModalOpen={setModalOpen}>
@@ -73,17 +76,16 @@ const VisitsList = ({ modalOpen, setModalOpen }) => {
           <form onSubmit={handleSubmit(onSubmitHandler)}>
             <label>Location</label>
             <input
-              {...register('loc')}
+              {...register('location')}
               required
               type='text'
               placeholder='4014 Wood Street NY'
             />
-            <p> {errors.loc?.message} </p>
+            <p> {errors.location?.message} </p>
             <label>Comment</label>
             <input name='comment' {...register('comment')} type='text' />
             <p> {errors.comment?.message} </p>
-
-            <Button type='submit'>Add Customer</Button>
+            <Button type='submit'>Add visit</Button>
           </form>
         </Styles>
       </CartModal>
@@ -96,6 +98,12 @@ export default VisitsList;
 const ListContainer = styled.div`
   margin: 80px 100px 0 100px;
   box-sizing: border-box;
+  p {
+    color: red;
+    font-family: 'Fredoka';
+    font-size: 12px;
+    height: 30px;
+  }
 `;
 
 const List = styled.div`

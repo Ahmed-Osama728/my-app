@@ -44,10 +44,8 @@ const Form = ({ newCustomerForm, setModalOpen }) => {
 
   const onSubmitHandler = (data) => {
     let customerData = { ...data, visits: [] };
-    console.log(customerData);
     setModalOpen(false);
     dispatch(addCustomer(customerData));
-
     reset();
   };
   return (
