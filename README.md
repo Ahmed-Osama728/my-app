@@ -10,10 +10,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ### Installation:
 After running the json-server from (https://github.com/Ahmed-Osama728/customer-app) 
-1-clone the repo
-   git clone git@github.com:Ahmed-Osama728/my-app.git
-2- Install NPM packages
-   npm install
-3- Run the app 
-   npm start 
+1.clone the repo
+   - git clone git@github.com:Ahmed-Osama728/my-app.git
+2.Install NPM packages
+   - npm install
+3.Run the app 
+   - npm start 
 
