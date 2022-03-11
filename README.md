@@ -9,8 +9,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - styled components
 
 ### Installation:
-After running the json-server from (https://github.com/Ahmed-Osama728/customer-app) 
-- clone the repo : git clone (https://github.com/Ahmed-Osama728/my-app.git)
+After running the json-server from https://github.com/Ahmed-Osama728/customer-app
+- clone the repo : git clone https://github.com/Ahmed-Osama728/my-app.git
 - Install NPM packages : npm install
 - Run the app : npm start 
 
